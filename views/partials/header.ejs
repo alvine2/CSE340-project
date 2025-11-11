@@ -5,6 +5,13 @@
       <a href="/">Home</a>
       <a href="#about">About</a>
       <a href="#contact">Contact</a>
+      <% if (locals.loggedin) { %>
+        <a href="/account/">Account</a>
+        <a href="/account/logout">Logout</a>
+      <% } else { %>
+        <a href="/account/login">Login</a>
+        <a href="/account/registration">Register</a>
+      <% } %>
     </nav>
   </div>
 </header>
