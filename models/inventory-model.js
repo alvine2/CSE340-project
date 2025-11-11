@@ -154,6 +154,33 @@ async function deleteInventory(inv_id) {
   }
 }
 
+/*******************************
+ * Vehicle Image Gallery Enhancement
+ *******************************/
+// Add a new image for a vehicle
+async function addVehicleImage(inv_id, image_url, image_alt) {
+  const sql = `INSERT INTO public.vehicle_images (inv_id, image_url, image_alt) VALUES ($1, $2, $3) RETURNING *`;
+  try {
+    const result = await pool.query(sql, [inv_id, image_url, image_alt]);
+    return result.rows[0];
+  } catch (error) {
+    console.error("addVehicleImage error. " + error);
+    throw error;
+  }
+}
+
+// Get all images for a vehicle
+async function getVehicleImages(inv_id) {
+  const sql = `SELECT * FROM public.vehicle_images WHERE inv_id = $1 ORDER BY image_id`;
+  try {
+    const result = await pool.query(sql, [inv_id]);
+    return result.rows;
+  } catch (error) {
+    console.error("getVehicleImages error. " + error);
+    throw error;
+  }
+}
+
 module.exports = {
   getClassifications,
   getInventoryByClassificationId,
@@ -161,5 +188,7 @@ module.exports = {
   addClassification,
   addInventory,
   updateInventory,
-  deleteInventory
+  deleteInventory,
+  addVehicleImage,
+  getVehicleImages
 };

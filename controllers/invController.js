@@ -34,16 +34,18 @@ invCont.buildByClassificationId = async function (req, res, next) {
  */
 invCont.buildByInventoryId = async function (req, res, next) {
   const inventoryId = req.params.inventoryId;
-  //const data = await invModel.getInventoryByInventoryId(inventoryId + 5); // Buggy code
-  const data = await invModel.getInventoryByInventoryId(inventoryId); // Clean code
+  const data = await invModel.getInventoryByInventoryId(inventoryId);
   const listing = await utilities.buildItemListing(data[0]);
   let nav = await utilities.getNav();
   const itemName = `${data[0].inv_make} ${data[0].inv_model}`;
-
+  // Fetch images for gallery
+  const galleryImages = await invModel.getVehicleImages(inventoryId);
   res.render("inventory/listing", {
     title: itemName,
     nav,
     listing,
+    galleryImages,
+    inventoryId
   });
 };
 
@@ -315,9 +317,6 @@ invCont.buildDeleteInventory = async function (req, res, next) {
   });
 };
 
-
-
-
 /**
  * Handle post request to delete a vehicle from the inventory along with redirects
  */
@@ -352,6 +351,40 @@ invCont.deleteInventory = async function (req, res, next) {
       inv_price,
     });
   }
+};
+
+/**********************************
+ * Vehicle Image Gallery Enhancement
+ **********************************/
+// Show gallery and upload form on vehicle detail page
+invCont.buildByInventoryId = async function (req, res, next) {
+  const inventoryId = req.params.inventoryId;
+  const data = await invModel.getInventoryByInventoryId(inventoryId);
+  const listing = await utilities.buildItemListing(data[0]);
+  let nav = await utilities.getNav();
+  const itemName = `${data[0].inv_make} ${data[0].inv_model}`;
+  // Fetch images for gallery
+  const galleryImages = await invModel.getVehicleImages(inventoryId);
+  res.render("inventory/listing", {
+    title: itemName,
+    nav,
+    listing,
+    galleryImages,
+    inventoryId
+  });
+};
+
+// Handle image upload
+invCont.addVehicleImage = async function (req, res, next) {
+  const { inventoryId } = req.body;
+  const { image_url, image_alt } = req.body;
+  try {
+    await invModel.addVehicleImage(inventoryId, image_url, image_alt);
+    req.flash("notice", "Image added to gallery.");
+  } catch (error) {
+    req.flash("notice", "Error adding image: " + error.message);
+  }
+  res.redirect(`/inv/detail/${inventoryId}`);
 };
 
 module.exports = invCont;

@@ -202,4 +202,43 @@ validate.checkUpdateData = async (req, res, next) => {
 };
 
 
+// Vehicle Image Gallery Enhancement: Validation
+validate.galleryImageRules = () => {
+  return [
+    body("image_url")
+      .trim()
+      .notEmpty()
+      .withMessage("Image URL is required.")
+      .isURL({ require_protocol: false })
+      .withMessage("Image URL must be valid.")
+      .matches(/^\/images\/vehicles\//)
+      .withMessage("Image URL must start with /images/vehicles/"),
+    body("image_alt")
+      .trim()
+      .isLength({ max: 100 })
+      .withMessage("Alt text must be 100 characters or less.")
+  ];
+};
+
+validate.checkGalleryImageData = async (req, res, next) => {
+  const errors = validationResult(req);
+  const { inventoryId, image_url, image_alt } = req.body;
+  if (!errors.isEmpty()) {
+    // Fetch images for sticky gallery
+    const galleryImages = await invModel.getVehicleImages(inventoryId);
+    let nav = await utilities.getNav();
+    return res.render("inventory/listing", {
+      title: "Vehicle Detail",
+      nav,
+      listing: "",
+      galleryImages,
+      inventoryId,
+      errors,
+      image_url,
+      image_alt
+    });
+  }
+  next();
+};
+
 module.exports = validate;

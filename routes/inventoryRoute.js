@@ -33,4 +33,12 @@ router.post("/delete/", utilities.handleErrors(invController.deleteInventory)); 
 // AJAX inventory api call route
 router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
 
+// Vehicle Image Gallery Enhancement
+router.post("/detail/:inventoryId/add-image",
+  utilities.checkAuthorizationManager,
+  invValidate.galleryImageRules(),
+  invValidate.checkGalleryImageData,
+  utilities.handleErrors(invController.addVehicleImage)
+);
+
 module.exports = router;
