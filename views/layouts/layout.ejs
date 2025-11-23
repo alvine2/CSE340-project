@@ -1,17 +1,48 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-    <%- include('../partials/head') %>
+  <head>
+    <%- include("../partials/head") %>
+    <style>
+      .flash-messages { 
+        margin: 20px auto; 
+        max-width: 1200px;
+        padding: 0 20px;
+      }
+      .alert { 
+        padding: 15px; 
+        margin: 10px 0; 
+        border-radius: 5px; 
+        border: 1px solid transparent;
+      }
+      .alert-notice { 
+        background: #d1ecf1; 
+        color: #0c5460; 
+        border-color: #bee5eb; 
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <%- include("../partials/header") %>
 
-<body>
-    <div id="wrapper">
-        <%- include('../partials/header') %>
-        <%- include('../partials/navigation') %>
+      <!-- FLASH MESSAGES -->
+      <% if (flashMessages) { %>
+        <% Object.keys(flashMessages).forEach(type => { %>
+          <% flashMessages[type].forEach(message => { %>
+            <div class="alert alert-<%= type %>">
+              <%= message %>
+            </div>
+          <% }) %>
+        <% }) %>
+      <% } %>
 
-        <main>
-            <%- body %>
-        </main>
+      <main id="main">
+        <%- body %>
+      </main>
 
-        <%- include('../partials/footer') %>
+      <%- include("../partials/footer") %>
     </div>
-</body>
+
+    <script src="/js/main.js" defer></script>
+  </body>
 </html>

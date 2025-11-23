@@ -3,9 +3,7 @@ const { body, validationResult } = require("express-validator");
 const accountModel = require("../models/account-model");
 const validate = {};
 
-/* **********************************
- *  Send Message Data Validation Rules
- * ********************************* */
+
 validate.sendMessageRules = () => {
   return [
     // Make sure there is a recipient selected
@@ -22,7 +20,7 @@ validate.sendMessageRules = () => {
       .trim()
       .escape()
       .notEmpty()
-      .withMessage("Message subject is missing or invalid"), // on error this message is sent.
+      .withMessage("Message subject is missing or invalid"), 
 
     // Make sure there is a message
     body("message_body")

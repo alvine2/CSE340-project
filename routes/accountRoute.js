@@ -1,57 +1,31 @@
-// Needed Resources
-const express = require("express");
-const router = new express.Router();
+const express = require("express")
+const router = express.Router()
+const utilities = require("../utilities/")
+const accountController = require("../controllers/accountController")
 
-const accountController = require("../controllers/accountController");
-const utilities = require("../utilities");
-const regValidate = require("../utilities/account-validation");
-
+// GET login view
 router.get(
-  "/",
-  utilities.checkLogin,
-  utilities.handleErrors(accountController.buildAccountManagementView)
-);
-
-// Route to build account view
-router.get("/login", utilities.handleErrors(accountController.buildLogin));
-router.post(
   "/login",
-  regValidate.loginRules(),
-  regValidate.checkLoginData,
-  utilities.handleErrors(accountController.accountLogin)
-);
+  utilities.handleErrors(accountController.buildLogin)
+)
 
-// Route to logout
-router.get("/logout", utilities.handleErrors(accountController.accountLogout));
+// POST login (placeholder for future implementation)
+router.post("/login", (req, res) => {
+  console.log("Login attempt:", req.body)
+  req.flash("notice", "Login functionality coming soon!")
+  res.redirect("/account/login")
+})
 
-// Registration handlers
+
 router.get(
-  "/registration",
+  "/register",
   utilities.handleErrors(accountController.buildRegister)
-);
+)
+
+
 router.post(
   "/register",
-  regValidate.registrationRules(),
-  regValidate.checkRegData,
   utilities.handleErrors(accountController.registerAccount)
-);
+)
 
-// Update account handlers
-router.get(
-  "/update/:accountId",
-  utilities.handleErrors(accountController.buildUpdate)
-);
-router.post(
-  "/update",
-  regValidate.updateRules(),
-  regValidate.checkUpdateData,
-  utilities.handleErrors(accountController.updateAccount)
-);
-router.post(
-  "/update-password",
-  regValidate.updatePasswordRules(),
-  regValidate.checkUpdatePasswordData,
-  utilities.handleErrors(accountController.updatePassword)
-);
-
-module.exports = router;
+module.exports = router

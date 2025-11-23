@@ -1,0 +1,63 @@
+<header class="site-header">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <div class="brand-row">
+    <p class="brand">CSE <span>Motors</span></p>
+    <a class="account-link" href="/account" aria-label="My account">My Account</a>
+  </div>
+
+  <nav class="main-nav" aria-label="Main navigation">
+    <ul class="nav-list">
+
+      <%
+        const links = [
+          { href: '/',        label: 'Home' },
+          { href: '/custom',  label: 'Custom Shop (All Vehicles)' },
+          { href: '/sport',   label: 'Sport Cars' },
+          { href: '/suv',     label: 'SUVs' },
+          { href: '/sedan',   label: 'Sedans' },
+          { href: '/truck',   label: 'Trucks' },
+          { href: '/account', label: 'Account' }
+        ];
+      %>
+
+      <% links.forEach(link => { 
+           let isActive = false;
+
+           if (link.href === '/') {
+             // Home: only active on exact "/"
+             isActive = currentPath === '/';
+           } else {
+             // Other links: exact match or section match
+             // e.g. "/sedan" or "/sedan/offers"
+             isActive = currentPath === link.href || currentPath.startsWith(link.href + '/');
+           }
+      %>
+        <li>
+          <a href="<%= link.href %>"
+             class="<%= isActive ? 'current-page' : '' %>"<%= isActive ? ' aria-current="page"' : '' %>>
+            <%= link.label %>
+          </a>
+        </li>
+      <% }) %>
+
+      <!-- Assignment Testing Dropdown -->
+      <li class="dropdown">
+        <button
+          class="dropdown-toggle"
+          type="button"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Assignment Tests
+          <i class="fas fa-chevron-down caret" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu" aria-label="Assignment test pages">
+          <li><a href="/account">Account Test Page</a></li>
+          <li><a href="/account/login">Login Test Page</a></li>
+          <li><a href="/account/register">Register Test Page</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>

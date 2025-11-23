@@ -1,81 +1,102 @@
+/* ******************************************
+ * This server.js file is the primary file of the 
+ * application. It is used to control the project.
+ *******************************************/
 
-const path = require('path');
-const express = require('express');
-require('dotenv').config(); // load .env if it exists
-const app = express();
-const staticRoutes = require('./routes/static');
-
-/* ***********************
- * View engine & static files
- *************************/
-// Set EJS as the view engine
-app.set('view engine', 'ejs');
-// Ensure views path is correct
-app.set('views', path.join(__dirname, 'views'));
-
-// Serve static files from public/
-app.use(express.static(path.join(__dirname, 'public')));
+// Suppress deprecation warnings
+process.removeAllListeners("warning")
 
 /* ***********************
- * Body parsing middleware
+ * Require Statements
  *************************/
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const express = require("express")
+const expressLayouts = require("express-ejs-layouts")
+require("dotenv").config()
+const app = express()
+
+// Session requires
+const session = require("express-session")
+
+// Body-parser
+const bodyParser = require("body-parser")
+
+// Database pool (for DB test and general use)
+const pool = require("./database")
+
+/* ***********************
+ * Middleware
+ *************************/
+
+// Make public files available
+app.use(express.static("public"))
+
+// Layout system
+app.use(expressLayouts)
+
+// Body parsing using body-parser (REPLACES express.json/express.urlencoded)
+app.use(bodyParser.json())
+app.use(bodyParser.urlencoded({ extended: true })) // handles form submissions
+
+// Session Middleware (Memory store for now)
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "fallback-secret-key-12345",
+    resave: false,
+    saveUninitialized: true,
+    name: "sessionId",
+    store: new session.MemoryStore(),
+  })
+)
+
+// Flash Messages
+app.use(require("connect-flash")())
+app.use((req, res, next) => {
+  res.locals.flashMessages = req.flash()
+  next()
+})
+
+app.set("view engine", "ejs")
+app.set("layout", "./layouts/layout")
 
 /* ***********************
  * Routes
  *************************/
-// Static routes
-app.use(staticRoutes);
+app.use("/", require("./routes/static"))
+app.use("/inv", require("./routes/inventoryRoute"))
 
-// Home route
-app.get('/', (req, res) => {
-  res.render('index', { title: 'W01 Site - Home' });
-});
-
-// Health check
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
-});
-
-// Intentional error route for testing error handling
-app.use("/intentional-error", require("./routes/intentionalErrorRoute"));
+// Account routes
+app.use("/account", require("./routes/accountRoute"))
 
 /* ***********************
- * Error handling middleware (MUST BE LAST)
+ * DB Test Route
  *************************/
-app.use((err, req, res, next) => {
-  console.error("Error caught by middleware:", err);
-  // Set error information in locals
-  res.locals.message = err.message;
-  res.locals.error = req.app.get("env") === "development" ? err : {};
-  res.status(err.status || 500);
-  res.render("errors/error", {
-    title: "Error - " + (err.status || 500),
-    message: err.message
-  });
-});
+app.get("/db-test", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT NOW()")
+    console.log("DB TEST RESULT:", result.rows[0])
+    res.send("DB OK: " + result.rows[0].now)
+  } catch (err) {
+    console.error("DB TEST ERROR:", err)
+    res.status(500).send("DB ERROR: " + err.message)
+  }
+})
 
 /* ***********************
- * Server setup
+ * Test Flash Route
  *************************/
-const host = process.env.HOST || 'localhost';
-let port = process.env.PORT || process.env.PORT_LOCAL || 5500;
+app.get("/test-flash", (req, res) => {
+  req.flash("success", "Flash messages are working!")
+  req.flash("notice", "This is a test notice message.")
+  res.redirect("/")
+})
 
-// Try to start the server, automatically find next port if busy
-const startServer = (p) => {
-  const server = app.listen(p, () => {
-    console.log(` App running on http://${host}:${p}`);
-  });
-
-  server.on('error', (err) => {
-    if (err.code === 'EADDRINUSE') {
-      console.warn(` Port ${p} in use, trying port ${p + 1}...`);
-      startServer(p + 1);
-    } else {
-      console.error(' Server error:', err);
-    }
-  });
-};
-
-startServer(parseInt(port));startServer(parseInt(port));
+/* ***********************
+ * Start Server
+ *************************/
+const port = process.env.PORT || 5500
+app.listen(port, () => {
+  console.log(`🚗 CSE Motors running on port ${port}`)
+  console.log(`Home page: http://localhost:${port}/`)
+  console.log(`Account login: http://localhost:${port}/account/login`)
+  console.log(`DB test: http://localhost:${port}/db-test`)
+})

@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Premium SUVs Collection | CSE Motors</title>
+
+  <!-- Your main CSE Motors stylesheet -->
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    
+
+    .premium-page {
+      padding: 14px 16px 20px;
+    }
+
+    .premium-header {
+      text-align: center;
+      margin-bottom: 18px;
+      padding: 18px 16px 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border: 1px solid #bbf7d0;
+    }
+
+    .premium-title {
+      font-family: Raleway, system-ui, sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.55rem, 4.6vw, 1.95rem);
+      margin: 0 0 8px;
+      color: #0c1022;
+    }
+
+    .premium-title span {
+      color: #059669;
+    }
+
+    .premium-subtitle {
+      margin: 0;
+      font-size: 0.97rem;
+      color: #3a435a;
+      max-width: 34rem;
+      margin-inline: auto;
+    }
+
+    /* Vehicle grid */
+    .vehicle-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    /* Card */
+    .vehicle-card {
+      background: #ffffff;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid #dcfce7;
+      box-shadow: 0 10px 22px rgba(0, 0, 0, 0.10);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .vehicle-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      border-color: #bbf7d0;
+    }
+
+    /* Image area */
+    .vehicle-card .image-container {
+      height: 210px;
+      background: #f0fdf4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .vehicle-card .vehicle-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      transition: transform 0.35s ease;
+    }
+
+    .vehicle-card:hover .vehicle-image {
+      transform: scale(1.04);
+    }
+
+    /* Badge */
+    .vehicle-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #ffffff;
+      background: linear-gradient(135deg, #059669, #047857);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    /* Card body */
+    .vehicle-info {
+      padding: 16px 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .vehicle-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .vehicle-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      font-family: Raleway, system-ui, sans-serif;
+      color: #0c1022;
+      margin: 0;
+    }
+
+    .vehicle-price {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: #059669;
+      white-space: nowrap;
+    }
+
+    /* Details pills */
+    .vehicle-details {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .detail-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: #f0fdf4;
+      font-size: 0.85rem;
+      color: #3a435a;
+    }
+
+    .detail-item i {
+      font-size: 0.8rem;
+      color: #059669;
+    }
+
+    /* Description */
+    .vehicle-description {
+      margin: 4px 0 10px;
+      font-size: 0.92rem;
+      color: #3a435a;
+      line-height: 1.55;
+    }
+
+    /* CTA button */
+    .view-details {
+      margin-top: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: #059669;
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 800;
+      font-size: 0.92rem;
+      box-shadow: 0 7px 18px rgba(5, 150, 105, 0.28);
+      transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .view-details i {
+      font-size: 0.85rem;
+    }
+
+    .view-details:hover {
+      background: #047857;
+      transform: translateY(-2px);
+      box-shadow: 0 9px 22px rgba(4, 120, 87, 0.35);
+    }
+
+    .view-details:focus-visible {
+      outline: 3px solid #00c2ff;
+      outline-offset: 2px;
+    }
+
+    /* Layout enhancements for wider screens */
+    @media (min-width: 720px) {
+      .vehicle-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (min-width: 960px) {
+      .premium-page {
+        padding: 4px 20px 20px;
+      }
+
+      .premium-header {
+        margin-bottom: 20px;
+      }
+
+      .vehicle-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a href="#premium-suvs-heading" class="skip-link">Skip to main content</a>
+
+  <div class="page">
+
+    <main class="premium-page" aria-labelledby="premium-suvs-heading">
+      <section class="premium-section">
+        <header class="premium-header">
+          <h1 id="premium-suvs-heading" class="premium-title">
+            Premium <span>SUVs</span> Collection
+          </h1>
+          <p class="premium-subtitle">
+            Discover rugged capability and spacious comfort with our premium SUV lineup, perfect for family adventures and outdoor exploration.
+          </p>
+        </header>
+
+        <section class="vehicle-grid" aria-label="Premium SUVs inventory">
+          <!-- GM Hummer (ID: 4) -->
+          <article class="vehicle-card">
+            <div class="image-container">
+              <span class="vehicle-badge">SUV</span>
+              <img src="/images/vehicles/hummer.jpg" alt="2016 GM Hummer in yellow" class="vehicle-image">
+            </div>
+
+            <div class="vehicle-info">
+              <div class="vehicle-header">
+                <h2 class="vehicle-title">2016 GM Hummer</h2>
+                <div class="vehicle-price">$56,800</div>
+              </div>
+
+              <div class="vehicle-details">
+                <div class="detail-item">
+                  <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                  <span>48,563 miles</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-palette" aria-hidden="true"></i>
+                  <span>Yellow</span>
+                </div>
+              </div>
+
+              <p class="vehicle-description">
+                The 2016 GM Hummer combines rugged capability with spacious comfort. This distinctive yellow SUV features impressive 
+                off-road capabilities while providing ample interior space for passengers and cargo.
+              </p>
+
+              <a href="/inv/detail/4" class="view-details">
+                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                <span>View Full Details</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="vehicle-card">
+            <div class="image-container">
+              <span class="vehicle-badge">Luxury SUV</span>
+              <img src="/images/vehicles/escalade.jpg" alt="2023 Cadillac Escalade in black" class="vehicle-image">
+            </div>
+
+            <div class="vehicle-info">
+              <div class="vehicle-header">
+                <h2 class="vehicle-title">2023 Cadillac Escalade</h2>
+                <div class="vehicle-price">$81,990</div>
+              </div>
+
+              <div class="vehicle-details">
+                <div class="detail-item">
+                  <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                  <span>3,450 miles</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-palette" aria-hidden="true"></i>
+                  <span>Black</span>
+                </div>
+              </div>
+
+              <p class="vehicle-description">
+                The 2023 Cadillac Escalade redefines luxury SUV standards with its sophisticated black exterior and premium amenities. 
+                This vehicle offers an exceptionally comfortable ride with advanced technology features.
+              </p>
+
+              <a href="/inv/detail/10" class="view-details">
+                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                <span>View Full Details</span>
+              </a>
+            </div>
+          </article>
+
+          <article class="vehicle-card">
+            <div class="image-container">
+              <span class="vehicle-badge">Adventure Van</span>
+              <img src="/images/vehicles/survan-tn.jpg" alt="2020 Custom Surf Van in blue and white" class="vehicle-image">
+            </div>
+
+            <div class="vehicle-info">
+              <div class="vehicle-header">
+                <h2 class="vehicle-title">2020 Custom Surf Van</h2>
+                <div class="vehicle-price">$61,500</div>
+              </div>
+
+              <div class="vehicle-details">
+                <div class="detail-item">
+                  <i class="fas fa-tachometer-alt" aria-hidden="true"></i>
+                  <span>21,450 miles</span>
+                </div>
+                <div class="detail-item">
+                  <i class="fas fa-palette" aria-hidden="true"></i>
+                  <span>Blue/White</span>
+                </div>
+              </div>
+
+              <p class="vehicle-description">
+                This 2020 Custom Surf Van is the perfect companion for beach adventures and road trips. Featuring a comfortable sleeping area, 
+                compact kitchenette, and specialized surfboard storage.
+              </p>
+
+              <a href="/inv/detail/11" class="view-details">
+                <i class="fas fa-external-link-alt" aria-hidden="true"></i>
+                <span>View Full Details</span>
+              </a>
+            </div>
+          </article>
+        </section>
+      </section>
+    </main>
+  </div>
+</body>
+</html>
