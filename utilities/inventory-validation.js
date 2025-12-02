@@ -1,7 +1,5 @@
 const { body, validationResult } = require('express-validator');
-const utilities = require('./index'); // ← ADD THIS IMPORT
-
-// Validation rules for inventory
+const utilities = require('./index');
 const inventoryValidationRules = () => {
     return [
         body('classification_id')
@@ -10,15 +8,15 @@ const inventoryValidationRules = () => {
         body('inv_make')
             .trim()
             .isLength({ min: 1 })
-            .withMessage('Make is required'),
+            .withMessage('Make is needed'),
         body('inv_model')
             .trim()
             .isLength({ min: 1 })
-            .withMessage('Model is required'),
+            .withMessage('Model is needed'),
         body('inv_description')
             .trim()
             .isLength({ min: 1 })
-            .withMessage('Description is required'),
+            .withMessage('Description is needed'),
         body('inv_price')
             .isFloat({ min: 0 })
             .withMessage('Price must be a positive number'),
@@ -31,24 +29,24 @@ const inventoryValidationRules = () => {
         body('inv_color')
             .trim()
             .isLength({ min: 1 })
-            .withMessage('Color is required')
+            .withMessage('Color is needed')
     ];
 }
 
-// Check validation result
+// Check validation result for adding inventory
 const checkInventoryData = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        const nav = await utilities.getNav(); // ← NOW THIS WILL WORK
+        const nav = await utilities.getNav();
         const classificationList = await utilities.buildClassificationList(req.body.classification_id);
         
-        req.flash('message', 'Please correct the errors below.');
+        req.flash('message', 'Please fix the errors below.');
         res.render("inventory/add-inventory", {
             title: "Add Inventory",
             nav,
             classificationList,
             errors: errors.array().map(error => error.msg),
-            message: { type: 'error', message: 'Please correct the errors below.' },
+            message: { type: 'error', message: 'Please fix the errors below.' },
             // Sticky form data
             ...req.body
         });
@@ -57,4 +55,38 @@ const checkInventoryData = async (req, res, next) => {
     next();
 }
 
-module.exports = { inventoryValidationRules, checkInventoryData };
+const checkUpdateData = async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        const nav = await utilities.getNav();
+        const classificationSelect = await utilities.buildClassificationList(req.body.classification_id);
+        
+        const itemName = `${req.body.inv_make} ${req.body.inv_model}`;
+        
+        res.render("inventory/edit-inventory", {
+            title: "Edit " + itemName,
+            nav,
+            classificationSelect: classificationSelect,
+            errors: errors.array().map(error => error.msg),
+            inv_id: req.body.inv_id,
+            inv_make: req.body.inv_make,
+            inv_model: req.body.inv_model,
+            inv_year: req.body.inv_year,
+            inv_description: req.body.inv_description,
+            inv_image: req.body.inv_image,
+            inv_thumbnail: req.body.inv_thumbnail,
+            inv_price: req.body.inv_price,
+            inv_miles: req.body.inv_miles,
+            inv_color: req.body.inv_color,
+            classification_id: req.body.classification_id
+        });
+        return;
+    }
+    next();
+}
+
+module.exports = { 
+    inventoryValidationRules, 
+    checkInventoryData,
+    checkUpdateData 
+};

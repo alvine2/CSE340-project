@@ -1,4 +1,3 @@
-console.log('invValidate export ->', require('../utilities/classification-validation'));
 const express = require("express");
 const router = express.Router();
 const invController = require("../controllers/inventoryController");
@@ -12,6 +11,14 @@ const invValidate = require("../utilities/inventory-validation");
 router.get(
   "/",
   utilities.handleErrors(invController.buildManagement)
+);
+
+// ---------------------
+// AJAX: Get Inventory by Classification (GET) - ADDED AS PER INSTRUCTIONS
+// ---------------------
+router.get(
+  "/getInventory/:classification_id",
+  utilities.handleErrors(invController.getInventoryJSON)
 );
 
 // ---------------------
@@ -78,26 +85,39 @@ router.post(
   utilities.handleErrors(invController.addInventoryAJAX)
 );
 
-// ---------------------
-// Debug routes for flash message testing
-// ---------------------
 router.get("/debug-flash", utilities.handleErrors(invController.debugFlash));
 router.get("/test-flash", utilities.handleErrors(invController.testFlash));
 
-// ---------------------
-// Inventory classification view
-// ---------------------
 router.get(
   "/type/:classificationId",
   utilities.handleErrors(invController.buildByClassificationId)
 );
 
-// ---------------------
-// Vehicle detail view
-// ---------------------
 router.get(
   "/detail/:inv_id",
   utilities.handleErrors(invController.buildVehicleDetail)
 );
+router.get(
+  "/edit/:inv_id",
+  utilities.handleErrors(invController.editInventoryView)
+);
 
-module.exports = router;
+router.post(
+  "/update",
+  invValidate.inventoryValidationRules(),
+  invValidate.checkUpdateData,
+  utilities.handleErrors(invController.updateInventory)
+);
+
+
+router.get(
+  "/delete/:inv_id",
+  utilities.handleErrors(invController.buildDeleteConfirmation)
+);
+
+router.post(
+  "/delete",
+  utilities.handleErrors(invController.deleteInventoryItem)
+);
+
+module.exports = router;  
