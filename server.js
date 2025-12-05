@@ -4,6 +4,8 @@
  *******************************************/
 
 // Suppress deprecation warnings
+require('dotenv').config();
+
 process.removeAllListeners("warning")
 
 /* ***********************

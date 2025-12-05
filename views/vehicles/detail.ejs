@@ -1,0 +1,45 @@
+<!-- inside vehicle detail page -->
+<h3>Gallery</h3>
+
+<div id="gallery">
+  <% if (vehicle.images && vehicle.images.length) { %>
+    <div class="thumbnails">
+      <% vehicle.images.forEach(function(img) { %>
+        <div class="thumb">
+          <% if (img.data) { %>
+            <img src="data:<%= img.contentType %>;base64,<%= img.data.toString('base64') %>" alt="<%= img.filename %>" style="max-width:150px;"/>
+          <% } else { %>
+            <img src="/uploads/<%= img.filename %>" alt="<%= img.filename %>" style="max-width:150px;"/>
+          <% } %>
+          <% if (user && (user.role === 'admin' || user.role === 'manager')) { %>
+            <form method="post" action="/vehicles/<%= vehicle._id %>/gallery/<%= img._id %>/delete" style="display:inline">
+              <button type="submit" onclick="return confirm('Delete this image?')">Delete</button>
+            </form>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <p>No images yet.</p>
+  <% } %>
+</div>
+
+<% if (user && (user.role === 'admin' || user.role === 'manager')) { %>
+  <hr/>
+  <form action="/vehicles/<%= vehicle._id %>/gallery/upload" method="post" enctype="multipart/form-data" id="uploadForm">
+    <label for="image">Upload image (JPG/PNG, ≤2MB):</label>
+    <input type="file" name="image" id="image" accept=".jpg,.jpeg,.png" required>
+    <button type="submit">Upload</button>
+  </form>
+<% } %>
+
+<script>
+document.getElementById('uploadForm')?.addEventListener('submit', function(e){
+  const input = document.getElementById('image');
+  if (!input.files || !input.files[0]) { e.preventDefault(); alert('Select a file'); return; }
+  const file = input.files[0];
+  if (file.size > 2 * 1024 * 1024) { e.preventDefault(); alert('File too large (max 2MB)'); return; }
+  const allowed = ['image/jpeg', 'image/png'];
+  if (!allowed.includes(file.type)) { e.preventDefault(); alert('Only JPG/PNG allowed'); return; }
+});
+</script>

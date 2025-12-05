@@ -1,55 +1,63 @@
+// jwtUtils.js
 const jwt = require('jsonwebtoken');
 
-class JWTUtils {
-  static signToken(payload) {
-    return jwt.sign(
-      payload, 
-      process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRES_IN }
-    );
-  }
+const JWT_SECRET = process.env.ACCESS_TOKEN_SECRET; // ← use this
+if (!JWT_SECRET) {
+  console.error('❌ ACCESS_TOKEN_SECRET not set in environment!');
+  process.exit(1);
+}
 
-  static verifyToken(token) {
-    try {
-      return jwt.verify(token, process.env.JWT_SECRET);
-    } catch (error) {
-      throw new Error('Invalid or expired token');
-    }
-  }
+const TOKEN_EXPIRATION = '1d';
 
-  static createAuthToken(user) {
-    const payload = {
-      userId: user.account_id,
-      email: user.account_email,
-      firstName: user.account_firstname,
-      lastName: user.account_lastname,
-      role: user.account_type || 'Client'
-    };
+function signToken(payload) {
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
+}
 
-    return this.signToken(payload);
-  }
-
-  static setAuthCookie(res, token) {
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: parseInt(process.env.COOKIE_EXPIRES_IN) * 24 * 60 * 60 * 1000, // days to ms
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      path: '/' // 🔥 ADD THIS LINE - makes cookie available across entire site
-    };
-
-    res.cookie('authToken', token, cookieOptions);
-  }
-
-  static clearAuthCookie(res) {
-    res.clearCookie('authToken', {
-      path: '/' // 🔥 ADD THIS LINE - must match the path used when setting
-    });
-  }
-
-  static extractToken(req) {
-    return req.cookies.authToken || req.headers['authorization']?.split(' ')[1];
+function verifyToken(token) {
+  try {
+    return jwt.verify(token, JWT_SECRET);
+  } catch (err) {
+    console.error('❌ JWT verification failed:', err.message);
+    return null;
   }
 }
 
-module.exports = JWTUtils;
+function createAuthToken(account) {
+  const payload = {
+    userId: account.account_id || account.id,
+    email: account.account_email,
+    role: account.account_type
+  };
+  return signToken(payload);
+}
+
+function setAuthCookie(res, token) {
+  res.cookie('jwt', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000,
+    sameSite: 'lax'
+  });
+}
+
+function clearAuthCookie(res) {
+  res.clearCookie('jwt');
+}
+
+function extractToken(req) {
+  if (req.cookies && req.cookies.jwt) return req.cookies.jwt;
+  const authHeader = req.headers['authorization'];
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    return authHeader.split(' ')[1];
+  }
+  return null;
+}
+
+module.exports = {
+  signToken,
+  verifyToken,
+  createAuthToken,
+  setAuthCookie,
+  clearAuthCookie,
+  extractToken
+};
